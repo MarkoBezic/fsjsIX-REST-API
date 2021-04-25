@@ -1,5 +1,6 @@
 const express = require("express");
-const Course = require("./models").Course;
+const Course = require("../models").Course;
+const { asyncHandler } = require("../middleware/async-handler");
 
 // Construct a router instance
 const router = express.Router();
@@ -17,7 +18,7 @@ function asynHandler(cb) {
 /* GET list of all courses including the User that owns that course */
 router.get(
   "/courses",
-  asynHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     const courses = await Course.findAll();
     res.json(courses);
   })
@@ -26,7 +27,7 @@ router.get(
 /* GET cousrse along with the User that owns that course */
 router.get(
   "/courses/:id",
-  asynHandler((req, res) => {})
+  asyncHandler((req, res) => {})
 );
 
 /* POST route that will create a new course */
@@ -38,13 +39,13 @@ router.post(
 /* PUT Update course */
 router.put(
   "/courses/:id",
-  asynHandler((req, res) => {})
+  asyncHandler((req, res) => {})
 );
 
 /* DELETE course*/
 router.delete(
   "/courses/:id",
-  asynHandler((req, res) => {})
+  asyncHandler((req, res) => {})
 );
 
 module.exports = router;

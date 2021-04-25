@@ -4,6 +4,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const db = require("./models");
+const routes = require("./routes");
 
 // variable to enable global error logging
 const enableGlobalErrorLogging =
@@ -14,6 +15,9 @@ const app = express();
 
 // setup morgan which gives us http request logging
 app.use(morgan("dev"));
+
+// Add routes.
+app.use("/api", routes);
 
 // async IIFE
 (async () => {

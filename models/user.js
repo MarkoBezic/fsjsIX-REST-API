@@ -4,7 +4,7 @@ const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {}
-  User.innit(
+  User.init(
     {
       firstName: {
         type: DataTypes.STRING,
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     { sequelize }
   );
 
-  Users.associate = (models) => {
+  User.associate = (models) => {
     User.hasMany(models.Course, {
       foreignKey: {
         fieldName: "userid",

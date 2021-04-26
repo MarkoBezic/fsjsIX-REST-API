@@ -34,7 +34,7 @@ router.post(
         error.name === "SequelizeConstraintError"
       ) {
         const errors = error.errors.map((err) => err.message);
-        restart.status(400).json({ errors });
+        res.status(400).json({ errors });
       } else {
         throw error;
       }

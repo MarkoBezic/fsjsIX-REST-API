@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require("../models").User;
 const { asyncHandler } = require("../middleware/async-handler");
-const { authenticateUser } = require("./middleware/auth-user");
+const { authenticateUser } = require("../middleware/auth-user");
 
 // Construct a router instance
 const router = express.Router();
@@ -37,8 +37,8 @@ router.post(
     } catch (error) {
       console.log("ERROR:", error.name);
       if (
-        error.name === "SequlizeValidationError" ||
-        error.name === "SequelizeConstraintError"
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
       ) {
         const errors = error.errors.map((err) => err.message);
         res.status(400).json({ errors });

@@ -38,10 +38,13 @@ module.exports = (sequelize, DataTypes) => {
         },
         validate: {
           notNull: {
-            msg: "an email address is required",
+            msg: "An email address is required",
           },
           notEmpty: {
-            msg: "please provide an email address name",
+            msg: "Please provide an email address name",
+          },
+          isEmail: {
+            msg: "Please provide valid email",
           },
         },
       },
@@ -68,7 +71,7 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (models) => {
     User.hasMany(models.Course, {
       foreignKey: {
-        fieldName: "userid",
+        fieldName: "userId",
         allowNull: false,
       },
     });

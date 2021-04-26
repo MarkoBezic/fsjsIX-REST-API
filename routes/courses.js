@@ -1,23 +1,13 @@
 const express = require("express");
 const Course = require("../models").Course;
 const { asyncHandler } = require("../middleware/async-handler");
-const auh;
+const { authenticateUser } = require("../middleware/auth-user");
 
 // Construct a router instance
 const router = express.Router();
 
 // body parser
 router.use(express.json());
-
-function asynHandler(cb) {
-  return async (req, res, next) => {
-    try {
-      await cb(req, res, next);
-    } catch (error) {
-      next(error);
-    }
-  };
-}
 
 /* GET list of all courses including the User that owns that course */
 router.get(
@@ -43,18 +33,15 @@ router.get(
 router.post(
   "/courses",
   authenticateUser,
-  asynHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     try {
       await Course.create(req.body);
-      //@marko todo, confirm changing the URI
       res.location("/api/courses");
       res.status(201).json({ message: "Course successfully created!" });
     } catch (error) {
-      console.log("ERROR:", error.name);
-
       if (
-        error.name === "SequlizeValidationError" ||
-        error.name === "SequelizeConstraintError"
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
       ) {
         const errors = error.errors.map((err) => err.message);
         res.status(400).json({ errors });
@@ -75,10 +62,9 @@ router.put(
       course.update(req.body);
       res.status(204);
     } catch (error) {
-      console.log("ERROR:", error.name);
       if (
-        error.name === "SequlizeValidationError" ||
-        error.name === "SequelizeConstraintError"
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
       ) {
         const errors = error.errors.map((err) => err.message);
         res.status(400).json({ errors });

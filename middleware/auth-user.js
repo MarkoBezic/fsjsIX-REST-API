@@ -1,7 +1,7 @@
 "use strict";
 
 const auth = require("basic-auth");
-const bcrypt = require("bycrtpt");
+const bcrypt = require("bcrypt");
 const { User } = require("../models");
 const { Op } = require("sequelize");
 
@@ -13,24 +13,21 @@ exports.authenticateUser = async (req, res, next) => {
 
   if (credentials) {
     const user = await User.findOne({
-      where: { emailAddress: credentials.emailAddress },
+      where: { emailAddress: credentials.name },
     });
     if (user) {
-      const authenticated = bcrypt.compareSync(
-        credentials.pass,
-        user.confirmedPassword
-      );
+      const authenticated = bcrypt.compareSync(credentials.pass, user.password);
       if (authenticated) {
         console.log(
-          `Authentication succesfule for user: ${credentials.emailAddress}`
+          `Authentication succesfull for username: ${user.emailAddress}`
         );
 
         req.currentUser = user;
       } else {
-        message = `Authentication failure for user: ${credentials.emailAddress}`;
+        message = `Authentication failure for username: ${user.emailAddress}`;
       }
     } else {
-      message = `User not found for user: ${credentials.emailAddress}`;
+      message = `User not found for username: ${credentials.name}`;
     }
   } else {
     message = `Auth header not found`;

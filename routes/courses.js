@@ -1,6 +1,7 @@
 const express = require("express");
 const Course = require("../models").Course;
 const { asyncHandler } = require("../middleware/async-handler");
+const auh;
 
 // Construct a router instance
 const router = express.Router();
@@ -41,6 +42,7 @@ router.get(
 /* POST route that will create a new course */
 router.post(
   "/courses",
+  authenticateUser,
   asynHandler(async (req, res) => {
     try {
       await Course.create(req.body);
@@ -66,16 +68,31 @@ router.post(
 /* PUT Update course */
 router.put(
   "/courses/:id",
+  authenticateUser,
   asyncHandler(async (req, res) => {
-    const course = await Course.findByPk(req.params.id);
-    res.update(req.body);
-    res.status(204);
+    try {
+      const course = await Course.findByPk(req.params.id);
+      course.update(req.body);
+      res.status(204);
+    } catch (error) {
+      console.log("ERROR:", error.name);
+      if (
+        error.name === "SequlizeValidationError" ||
+        error.name === "SequelizeConstraintError"
+      ) {
+        const errors = error.errors.map((err) => err.message);
+        res.status(400).json({ errors });
+      } else {
+        throw error;
+      }
+    }
   })
 );
 
 /* DELETE course*/
 router.delete(
   "/courses/:id",
+  authenticateUser,
   asyncHandler(async (req, res) => {
     const course = await Course.findByPk(req.params.id);
     course.destroy();

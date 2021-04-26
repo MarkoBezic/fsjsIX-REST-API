@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../models").User;
 const { asyncHandler } = require("../middleware/async-handler");
+const { authenticateUser } = require("./middleware/auth-user");
 
 // Construct a router instance
 const router = express.Router();
@@ -11,9 +12,16 @@ router.use(express.json());
 /* GET current user */
 router.get(
   "/users",
+  authenticateUser,
   asyncHandler(async (req, res) => {
-    const users = await User.findAll();
-    res.json(users);
+    const user = req.currentUser;
+
+    res.json({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      emailAddress: user.emailAddress,
+    });
+
     res.status(200);
   })
 );
@@ -28,7 +36,6 @@ router.post(
       res.status(201).json({ message: "User successfully created!" });
     } catch (error) {
       console.log("ERROR:", error.name);
-
       if (
         error.name === "SequlizeValidationError" ||
         error.name === "SequelizeConstraintError"

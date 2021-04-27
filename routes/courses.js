@@ -72,8 +72,10 @@ router.put(
   authenticateUser,
   asyncHandler(async (req, res) => {
     const user = req.currentUser;
+    const requestedCourse = await Course.findByPk(req.params.id);
+    const courseOwnerId = requestedCourse.userId;
     try {
-      if (user.id === req.body.userId) {
+      if (user.id === courseOwnerId) {
         const course = req.body;
         await Course.update(course, { where: { id: req.params.id } });
         res.status(204);

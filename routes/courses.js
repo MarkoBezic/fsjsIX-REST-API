@@ -14,7 +14,7 @@ router.get(
   "/courses",
   asyncHandler(async (req, res) => {
     const courses = await Course.findAll();
-    res.json(
+    res.status(200).json(
       courses.map((course) => {
         return {
           title: course.title,
@@ -25,7 +25,6 @@ router.get(
         };
       })
     );
-    res.status(200);
   })
 );
 
@@ -34,14 +33,13 @@ router.get(
   "/courses/:id",
   asyncHandler(async (req, res) => {
     const course = await Course.findByPk(req.params.id);
-    res.json({
+    res.status(200).json({
       title: course.title,
       description: course.description,
       estimatedTime: course.estimatedTime,
       materialsNeeded: course.materialsNeeded,
       userId: course.userId,
     });
-    res.status(200);
   })
 );
 
@@ -78,9 +76,12 @@ router.put(
       if (user.id === req.body.userId) {
         const course = req.body;
         await Course.update(course, { where: { id: req.params.id } });
-        res.status(204).end();
+        res.status(204);
       } else {
-        res.status(403).end();
+        res.status(403).json({
+          message:
+            "Current authenticated user must be owner of the courses being updated",
+        });
       }
     } catch (error) {
       if (
@@ -107,7 +108,10 @@ router.delete(
       course.destroy();
       res.status(204).end();
     } else {
-      res.status(403).end();
+      res.status(403).json({
+        message:
+          "Current authenticated user must be the owner of the course to be able to delete it",
+      });
     }
   })
 );

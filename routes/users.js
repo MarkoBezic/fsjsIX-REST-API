@@ -16,13 +16,11 @@ router.get(
   asyncHandler(async (req, res) => {
     const user = req.currentUser;
 
-    res.json({
+    res.status(200).json({
       firstName: user.firstName,
       lastName: user.lastName,
       emailAddress: user.emailAddress,
     });
-
-    res.status(200);
   })
 );
 

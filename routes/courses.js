@@ -29,7 +29,7 @@ router.get(
   })
 );
 
-/* GET cousrse along with the User that owns that course */
+/* GET course along with the User that owns that course */
 router.get(
   "/courses/:id",
   asyncHandler(async (req, res) => {
@@ -48,7 +48,7 @@ router.get(
   })
 );
 
-/* POST route that will create a new course */
+/* POST route creates a new course */
 router.post(
   "/courses",
   authenticateUser,

@@ -10,19 +10,15 @@ const router = express.Router();
 router.use(express.json());
 
 /* GET current user */
-router.get(
-  "/users",
-  authenticateUser,
-  asyncHandler(async (req, res) => {
-    const user = req.currentUser;
+router.get("/users", authenticateUser, (req, res) => {
+  const user = req.currentUser;
 
-    res.status(200).json({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      emailAddress: user.emailAddress,
-    });
-  })
-);
+  res.status(200).json({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    emailAddress: user.emailAddress,
+  });
+});
 
 /* POST create new user */
 router.post(

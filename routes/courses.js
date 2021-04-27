@@ -1,5 +1,6 @@
 const express = require("express");
 const Course = require("../models").Course;
+const User = require("../models").User;
 const { asyncHandler } = require("../middleware/async-handler");
 const { authenticateUser } = require("../middleware/auth-user");
 
@@ -13,18 +14,18 @@ router.use(express.json());
 router.get(
   "/courses",
   asyncHandler(async (req, res) => {
-    const courses = await Course.findAll();
-    res.status(200).json(
-      courses.map((course) => {
-        return {
-          title: course.title,
-          description: course.description,
-          estimatedTime: course.estimatedTime,
-          materialsNeeded: course.materialsNeeded,
-          userId: course.userId,
-        };
-      })
-    );
+    const courses = await Course.findAll({
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+      include: [
+        {
+          model: User,
+          attributes: ["firstName", "lastName", "emailAddress"],
+        },
+      ],
+    });
+    res.status(200).json(courses);
   })
 );
 

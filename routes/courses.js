@@ -14,7 +14,17 @@ router.get(
   "/courses",
   asyncHandler(async (req, res) => {
     const courses = await Course.findAll();
-    res.json(courses);
+    res.json(
+      courses.map((course) => {
+        return {
+          title: course.title,
+          description: course.description,
+          estimatedTime: course.estimatedTime,
+          materialsNeeded: course.materialsNeeded,
+          userId: course.userId,
+        };
+      })
+    );
     res.status(200);
   })
 );
@@ -24,7 +34,13 @@ router.get(
   "/courses/:id",
   asyncHandler(async (req, res) => {
     const course = await Course.findByPk(req.params.id);
-    res.json(course);
+    res.json({
+      title: course.title,
+      description: course.description,
+      estimatedTime: course.estimatedTime,
+      materialsNeeded: course.materialsNeeded,
+      userId: course.userId,
+    });
     res.status(200);
   })
 );
@@ -57,10 +73,15 @@ router.put(
   "/courses/:id",
   authenticateUser,
   asyncHandler(async (req, res) => {
+    const user = req.currentUser;
     try {
-      const course = req.body;
-      await Course.update(course, { where: { id: req.params.id } });
-      res.status(204).end();
+      if (user.id === req.body.userId) {
+        const course = req.body;
+        await Course.update(course, { where: { id: req.params.id } });
+        res.status(204).end();
+      } else {
+        res.status(403).end();
+      }
     } catch (error) {
       if (
         error.name === "SequelizeValidationError" ||
@@ -80,9 +101,14 @@ router.delete(
   "/courses/:id",
   authenticateUser,
   asyncHandler(async (req, res) => {
+    const user = req.currentUser;
     const course = await Course.findByPk(req.params.id);
-    course.destroy();
-    res.status(204).end();
+    if (user.id === course.userId) {
+      course.destroy();
+      res.status(204).end();
+    } else {
+      res.status(403).end();
+    }
   })
 );
 

@@ -54,9 +54,11 @@ router.post(
   authenticateUser,
   asyncHandler(async (req, res) => {
     try {
-      await Course.create(req.body);
-      res.location("/api/courses");
-      res.status(201).json({ message: "Course successfully created!" });
+      const newCourse = await Course.create(req.body);
+      res.location("/api/courses/" + newCourse.id);
+      res.status(201).json({
+        message: "Course successfully created!",
+      });
     } catch (error) {
       if (
         error.name === "SequelizeValidationError" ||
@@ -83,7 +85,7 @@ router.put(
       if (user.id === courseOwnerId) {
         const course = req.body;
         await Course.update(course, { where: { id: req.params.id } });
-        res.status(204);
+        res.status(204).end();
       } else {
         res.status(403).json({
           message:

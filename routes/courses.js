@@ -58,9 +58,9 @@ router.put(
   authenticateUser,
   asyncHandler(async (req, res) => {
     try {
-      const course = await Course.findByPk(req.params.id);
-      course.update(req.body);
-      res.status(204);
+      const course = req.body;
+      await Course.update(course, { where: { id: req.params.id } });
+      res.status(204).end();
     } catch (error) {
       if (
         error.name === "SequelizeValidationError" ||
@@ -82,7 +82,7 @@ router.delete(
   asyncHandler(async (req, res) => {
     const course = await Course.findByPk(req.params.id);
     course.destroy();
-    res.status(204);
+    res.status(204).end();
   })
 );
 
